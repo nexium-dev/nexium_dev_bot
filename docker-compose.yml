@@ -1,0 +1,9 @@
+services:
+  bot:
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src
+    restart: always
+    working_dir: /app/src/bot
