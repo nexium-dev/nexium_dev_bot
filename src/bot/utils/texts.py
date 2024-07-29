@@ -15,9 +15,25 @@
 #
 
 
-from aiogram.fsm.state import StatesGroup, State
+from yaml import safe_load
+from pydantic import BaseModel
 
 
-class Form(StatesGroup):
-    name = State()
-    age = State()
+class Texts(BaseModel):
+    welcome_message_sticker: str
+    welcome_message: str
+    welcome_message_kb_bt_1: str
+    main_kb_bt_1: str
+    main_kb_bt_2: str
+    main_kb_bt_3: str
+    main_kb_bt_4: str
+    main_kb_bt_5: str
+    main_kb_bt_6: str
+    about: str
+
+
+with open('texts.yaml', 'r', encoding='utf-8') as file:
+    data = safe_load(file)
+
+
+texts = Texts(**data)

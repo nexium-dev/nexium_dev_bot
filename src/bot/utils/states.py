@@ -15,5 +15,8 @@
 #
 
 
-from .texts import texts
-from .states import States
+from aiogram.fsm.state import StatesGroup, State
+
+
+class States(StatesGroup):
+    MAIN = State()

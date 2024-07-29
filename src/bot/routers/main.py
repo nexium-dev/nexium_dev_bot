@@ -15,14 +15,30 @@
 #
 
 
-from aiogram import Router
+from aiogram import Router, F
+from aiogram.filters import Command
+from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from keyboards import Keyboards
+from keyboards import Keyboards, InlineKeyboards
+from utils import texts, States
 
 router = Router(name=__name__)
 
 
-@router.message()
-async def message_handler(message: Message) -> None:
-    await message.answer('Hi', reply_markup=Keyboards.main)
+@router.message(States.MAIN, F.text == texts.main_kb_bt_1)
+async def main(message: Message) -> None:
+    await message.answer(text=texts.about)
+
+
+@router.message(Command('start', 'restart'))
+async def start(message: Message, state: FSMContext) -> None:
+    await state.set_state(States.MAIN)
+    await message.answer_sticker(
+        sticker=texts.welcome_message_sticker,
+        reply_markup=Keyboards.MAIN,
+    )
+    await message.answer(
+        text=texts.welcome_message,
+        reply_markup=InlineKeyboards.MAIN,
+    )

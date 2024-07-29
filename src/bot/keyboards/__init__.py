@@ -15,7 +15,9 @@
 #
 
 
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton as Kb
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton as Kb, InlineKeyboardMarkup, InlineKeyboardButton
+
+from utils import texts
 
 
 class Rkm(ReplyKeyboardMarkup):
@@ -25,8 +27,18 @@ class Rkm(ReplyKeyboardMarkup):
 
 
 class Keyboards:
-    main = Rkm(
+    MAIN = Rkm(
         keyboard=[
-            [Kb(text='Hi')],
+            [Kb(text=texts.main_kb_bt_1)],
+            [Kb(text=texts.main_kb_bt_2), Kb(text=texts.main_kb_bt_3)],
+            [Kb(text=texts.main_kb_bt_4), Kb(text=texts.main_kb_bt_5)],
+            [Kb(text=texts.main_kb_bt_6)],
         ],
+    )
+
+class InlineKeyboards:
+    MAIN = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text=texts.welcome_message_kb_bt_1, url='https://nexium.me')],
+        ]
     )
