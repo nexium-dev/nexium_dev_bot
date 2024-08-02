@@ -16,10 +16,13 @@
 
 
 from aiogram.fsm.state import StatesGroup, State
-# from aiogram.fsm.storage.redis import RedisStorage
+from aiogram.fsm.storage.redis import RedisStorage
+from redis.asyncio import Redis
+
+from utils.config import REDIS_URL
 
 
-# storage = RedisStorage(redis=)
+storage = RedisStorage(redis=Redis.from_url(url=REDIS_URL))
 
 
 class States(StatesGroup):

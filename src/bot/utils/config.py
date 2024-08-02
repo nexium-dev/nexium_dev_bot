@@ -23,5 +23,6 @@ load_dotenv()
 
 BOT_TOKEN = getenv('BOT_TOKEN')
 DATABASE_URL = getenv('DATABASE_URL')
+REDIS_URL = getenv('REDIS_URL')
 USER_ID = getenv('USER_ID')
 USER_HASH = getenv('USER_HASH')

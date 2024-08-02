@@ -15,13 +15,12 @@
 #
 
 
-from .main import router as router_main
-from .services import router as router_services
-from .consultation import router as router_consultation
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from database.models import UserModel
+from database.repositories.base import BaseRepository
 
 
-routers = [
-    router_main,
-    router_services,
-    router_consultation,
-]
+class UserRepository(BaseRepository[UserModel]):
+    def __init__(self, session: AsyncSession):
+        super().__init__(UserModel, session)

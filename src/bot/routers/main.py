@@ -15,15 +15,19 @@
 #
 
 
-from re import search
-
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery, FSInputFile, InputMediaPhoto
+from aiogram.types import Message
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from keyboards import Keyboards, InlineKeyboards, create_kb_services
+from database.database import db_session
+from database.repositories.user import UserRepository
+from database.repositories.utm import UtmRepository
+from keyboards import Keyboards, InlineKeyboards
 from utils import texts, States
+from utils.funcs import extract_number_from_command
+
 
 router = Router(name=__name__)
 
@@ -33,41 +37,30 @@ async def kb_bt_1(message: Message) -> None:
     await message.answer(text=texts.about)
 
 
-@router.message(States.MAIN, F.text == texts.main_kb_bt_2)
-async def kb_bt_2(message: Message) -> None:
-    await message.answer_photo(
-        photo=FSInputFile(path='static/images/services_1.png'),
-        caption=texts.services_1,
-        reply_markup=create_kb_services(),
-    )
-
-@router.callback_query(F.data.contains('services'))
-async def kb_query(callback_query: CallbackQuery):
-    service_index = int(search(r'services_(\d+)', str(callback_query.data)).group(1))
-    await callback_query.message.edit_media(
-        media=InputMediaPhoto(
-            media=FSInputFile(path=f'static/images/services_{service_index+1}.png'),
-            caption={
-                0: texts.services_1,
-                1: texts.services_2,
-                2: texts.services_3,
-                3: texts.services_4,
-            }[service_index],
-        reply_markup=create_kb_services(active_index=service_index)),
-    )
-    await callback_query.message.edit_caption(
-        caption={
-            0: texts.services_1,
-            1: texts.services_2,
-            2: texts.services_3,
-            3: texts.services_4,
-        }[service_index],
-        reply_markup=create_kb_services(active_index=service_index)
-    )
-
-
 @router.message(Command('start', 'restart'))
-async def start(message: Message, state: FSMContext) -> None:
+@db_session
+async def start(message: Message, state: FSMContext, session: AsyncSession) -> None:
+    tg_user_id = message.from_user.id
+
+    user_repo = UserRepository(session=session)
+    user = await user_repo.get_by(obj_in={'tg_user_id': tg_user_id})
+
+    if not user:
+        utm = None
+        utm_id = extract_number_from_command(message.text)
+        if utm_id:
+            utm_repo = UtmRepository(session=session)
+            utm = await utm_repo.get_by_id(id_=utm_id)
+
+        await user_repo.create(
+            obj_in={
+                'tg_user_id': tg_user_id,
+                'firstname': message.from_user.first_name,
+                'lastname': message.from_user.last_name,
+                'utm_id': utm.id if utm else None,
+            },
+        )
+
     await state.set_state(States.MAIN)
     await message.answer_sticker(
         sticker=texts.welcome_sticker,

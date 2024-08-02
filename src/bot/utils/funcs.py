@@ -15,13 +15,11 @@
 #
 
 
-from .main import router as router_main
-from .services import router as router_services
-from .consultation import router as router_consultation
+from re import search
 
 
-routers = [
-    router_main,
-    router_services,
-    router_consultation,
-]
+def extract_number_from_command(command: str):
+    match = search(r'/start (\d+)', command)
+    if match:
+        return int(match.group(1))
+    return None

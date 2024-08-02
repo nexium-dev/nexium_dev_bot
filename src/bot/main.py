@@ -26,9 +26,10 @@ from aiogram.enums import ParseMode
 from database.database import init_db
 from routers import routers
 from utils.config import BOT_TOKEN
+from utils.states import storage
 
 
-dp = Dispatcher()
+dp = Dispatcher(storage=storage)
 bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp.include_routers(*routers)
 

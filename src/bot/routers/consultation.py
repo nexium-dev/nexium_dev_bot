@@ -15,13 +15,19 @@
 #
 
 
-from .main import router as router_main
-from .services import router as router_services
-from .consultation import router as router_consultation
+from aiogram import Router, F
+from aiogram.types import CallbackQuery
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from database.database import db_session
+from database.repositories.user import UserRepository
+
+router = Router(name=__name__)
 
 
-routers = [
-    router_main,
-    router_services,
-    router_consultation,
-]
+@router.callback_query(F.data == 'consultation')
+@db_session
+async def kb_query(callback_query: CallbackQuery, session: AsyncSession):
+    user_repo = UserRepository(session=session)
+    user = await user_repo.get_by(obj_in={'tg_user_id': callback_query.from_user.id})
+    await callback_query.answer(text=user.firstname, show_alert=True)
