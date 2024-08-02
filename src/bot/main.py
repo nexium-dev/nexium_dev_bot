@@ -23,6 +23,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
+from database.database import init_db
 from routers import routers
 from utils.config import BOT_TOKEN
 
@@ -33,6 +34,7 @@ dp.include_routers(*routers)
 
 
 async def main() -> None:
+    await init_db()
     await dp.start_polling(bot)
 
 

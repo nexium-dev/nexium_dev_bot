@@ -32,13 +32,34 @@ class Keyboards:
             [Kb(text=texts.main_kb_bt_1)],
             [Kb(text=texts.main_kb_bt_2), Kb(text=texts.main_kb_bt_3)],
             [Kb(text=texts.main_kb_bt_4), Kb(text=texts.main_kb_bt_5)],
-            [Kb(text=texts.main_kb_bt_6)],
+            [Kb(text=texts.bt_consultation)],
         ],
     )
 
 class InlineKeyboards:
     MAIN = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text=texts.welcome_message_kb_bt_1, url='https://nexium.me')],
+            [InlineKeyboardButton(text=texts.bt_consultation, url='https://nexium.me')],
+        ]
+    )
+
+def create_kb_services(active_index=0):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text=f'{texts.services_kb_selected} {text}' if index == active_index else text,
+                    callback_data='consultation' if text == texts.bt_consultation else f'services_{index}',
+                )
+            ]
+            for index, text in enumerate(
+                [
+                    texts.services_kb_bt_1,
+                    texts.services_kb_bt_2,
+                    texts.services_kb_bt_3,
+                    texts.services_kb_bt_4,
+                    texts.bt_consultation,
+                ],
+            )
         ]
     )

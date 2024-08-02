@@ -15,13 +15,19 @@
 #
 
 
-from dotenv import load_dotenv
-from os import getenv
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
-load_dotenv()
+from  database import models
+from utils.config import DATABASE_URL
 
 
-BOT_TOKEN = getenv('BOT_TOKEN')
-DATABASE_URL = getenv('DATABASE_URL')
-USER_ID = getenv('USER_ID')
-USER_HASH = getenv('USER_HASH')
+engine = create_async_engine(
+    url=DATABASE_URL,
+    echo=True,
+)
+async_session = async_sessionmaker(engine, expire_on_commit=False)
+
+
+async def init_db():
+    async with engine.begin() as conn:
+        await conn.run_sync(models.get_base_model().metadata.create_all)

@@ -20,16 +20,27 @@ from pydantic import BaseModel
 
 
 class Texts(BaseModel):
-    welcome_message_sticker: str
-    welcome_message: str
-    welcome_message_kb_bt_1: str
+    bt_consultation: str
+    # consultation_1: str
+
+    welcome: str
+    welcome_sticker: str
     main_kb_bt_1: str
     main_kb_bt_2: str
     main_kb_bt_3: str
     main_kb_bt_4: str
     main_kb_bt_5: str
-    main_kb_bt_6: str
     about: str
+
+    services_1: str
+    services_2: str
+    services_3: str
+    services_4: str
+    services_kb_bt_1: str
+    services_kb_bt_2: str
+    services_kb_bt_3: str
+    services_kb_bt_4: str
+    services_kb_selected: str
 
 
 with open('texts.yaml', 'r', encoding='utf-8') as file:

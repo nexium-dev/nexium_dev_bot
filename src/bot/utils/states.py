@@ -16,6 +16,10 @@
 
 
 from aiogram.fsm.state import StatesGroup, State
+# from aiogram.fsm.storage.redis import RedisStorage
+
+
+# storage = RedisStorage(redis=)
 
 
 class States(StatesGroup):

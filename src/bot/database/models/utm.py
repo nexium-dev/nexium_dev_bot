@@ -15,13 +15,14 @@
 #
 
 
-from dotenv import load_dotenv
-from os import getenv
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
 
-load_dotenv()
+from database.models.base import BaseModel
 
 
-BOT_TOKEN = getenv('BOT_TOKEN')
-DATABASE_URL = getenv('DATABASE_URL')
-USER_ID = getenv('USER_ID')
-USER_HASH = getenv('USER_HASH')
+class UtmModel(BaseModel):
+    __tablename__ = 'utms'
+    id = Column(Integer, primary_key=True, index=True)
+    description = Column(String(256), nullable=False)
+    users = relationship(argument='UserModel', back_populates='utm')

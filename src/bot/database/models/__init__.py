@@ -15,13 +15,10 @@
 #
 
 
-from dotenv import load_dotenv
-from os import getenv
-
-load_dotenv()
+from .utm import UtmModel
+from .user import UserModel
 
 
-BOT_TOKEN = getenv('BOT_TOKEN')
-DATABASE_URL = getenv('DATABASE_URL')
-USER_ID = getenv('USER_ID')
-USER_HASH = getenv('USER_HASH')
+def get_base_model():
+    from .base import BaseModel
+    return BaseModel

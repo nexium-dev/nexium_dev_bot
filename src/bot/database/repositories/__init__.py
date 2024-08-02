@@ -13,15 +13,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-
-from dotenv import load_dotenv
-from os import getenv
-
-load_dotenv()
-
-
-BOT_TOKEN = getenv('BOT_TOKEN')
-DATABASE_URL = getenv('DATABASE_URL')
-USER_ID = getenv('USER_ID')
-USER_HASH = getenv('USER_HASH')

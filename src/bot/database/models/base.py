@@ -15,13 +15,11 @@
 #
 
 
-from dotenv import load_dotenv
-from os import getenv
+from __future__ import annotations
 
-load_dotenv()
+from sqlalchemy.ext.asyncio import AsyncAttrs
+from sqlalchemy.orm import DeclarativeBase
 
 
-BOT_TOKEN = getenv('BOT_TOKEN')
-DATABASE_URL = getenv('DATABASE_URL')
-USER_ID = getenv('USER_ID')
-USER_HASH = getenv('USER_HASH')
+class BaseModel(AsyncAttrs, DeclarativeBase):
+    pass
