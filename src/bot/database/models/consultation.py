@@ -15,21 +15,23 @@
 #
 
 
-from sqlalchemy import Column, Integer, String, ForeignKey, BigInteger
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, BigInteger, Boolean
 from sqlalchemy.orm import relationship
 
 from database.models.base import BaseModel
 
 
-class UserModel(BaseModel):
-    __tablename__ = "users"
+class ConsultationModel(BaseModel):
+    __tablename__ = "consultations"
     id = Column(Integer, primary_key=True, index=True)
-    tg_user_id = Column(BigInteger, unique=True)
-    firstname = Column(String(256), nullable=False)
-    lastname = Column(String(256))
-    username = Column(String(256))
 
-    utm_id = Column(Integer, ForeignKey('utms.id'))
+    user_id = Column(Integer, ForeignKey('users.id'))
+    user = relationship(argument='UserModel', back_populates='consultations')
 
-    utm = relationship(argument='UtmModel', back_populates='users')
-    consultations = relationship(argument='ConsultationModel', back_populates='user')
+    name = Column(String(256), nullable=False)
+    category = Column(String(256), nullable=False)
+
+    datetime = Column(DateTime)
+    group_id = Column(BigInteger)
+    group_url = Column(String(256))
+    closed = Column(Boolean, default=False)

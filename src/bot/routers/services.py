@@ -15,29 +15,46 @@
 #
 
 
-from re import search
-
 from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery, FSInputFile, InputMediaPhoto
+from aiogram.fsm.context import FSMContext
+from aiogram.types import CallbackQuery, FSInputFile, InputMediaPhoto
 
 from keyboards import create_kb_services
+from routers.main import go_main
 from utils import texts, States
+from utils.bot import bot
+from utils.funcs import extract_number_from_text_by_prefix
 
 
 router = Router(name=__name__)
 
 
-@router.message(States.MAIN, F.text == texts.main_kb_bt_2)
-async def services(message: Message) -> None:
-    await message.answer_photo(
+@router.callback_query(F.data == 'services')
+async def services(callback_query: CallbackQuery, state: FSMContext) -> None:
+    await callback_query.answer()
+    tg_user_id = callback_query.from_user.id
+
+    # Delete messages
+    data = await state.get_data()
+    for message_id in data['messages_to_delete']:
+        await bot.delete_message(chat_id=tg_user_id, message_id=message_id)
+
+    message = await bot.send_photo(
+        chat_id=tg_user_id,
         photo=FSInputFile(path='static/images/services_1.png'),
         caption=texts.services_1,
         reply_markup=create_kb_services(),
     )
+    await state.set_state(States.SERVICES)
+    await state.set_data({'messages_to_delete': [message.message_id]})
 
-@router.callback_query(F.data.contains('services'))
+
+
+@router.callback_query(F.data.contains('services:'))
 async def kb_query(callback_query: CallbackQuery):
-    service_index = int(search(r'services_(\d+)', str(callback_query.data)).group(1))
+    await callback_query.answer()
+
+    service_index = extract_number_from_text_by_prefix(prefix='services', text=callback_query.data)
     await callback_query.message.edit_media(
         media=InputMediaPhoto(
             media=FSInputFile(path=f'static/images/services_{service_index+1}.png'),
@@ -58,3 +75,9 @@ async def kb_query(callback_query: CallbackQuery):
         }[service_index],
         reply_markup=create_kb_services(active_index=service_index)
     )
+
+
+@router.callback_query(States.SERVICES, F.data == 'back')
+async def kb_back(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.message.delete()
+    await go_main(tg_user_id=callback_query.from_user.id, state=state)

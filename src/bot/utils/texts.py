@@ -21,7 +21,7 @@ from pydantic import BaseModel
 
 class Texts(BaseModel):
     bt_consultation: str
-    # consultation_1: str
+    bt_back: str
 
     welcome: str
     welcome_sticker: str
@@ -41,6 +41,23 @@ class Texts(BaseModel):
     services_kb_bt_3: str
     services_kb_bt_4: str
     services_kb_selected: str
+
+    contacts: str
+
+    consultation_1: str
+    consultation_2: str
+    consultation_3_added: str
+    consultation_3_not_added: str
+    consultation_3_kb_bt_chat: str
+    consultation_services_kb_bt_1: str
+    consultation_services_kb_bt_2: str
+    consultation_services_kb_bt_3: str
+    consultation_services_kb_bt_4: str
+    consultation_services_kb_bt_5: str
+    consultation_services_kb_bt_6: str
+    consultation_services_kb_bt_7: str
+    consultation_services_kb_bt_8: str
+    consultation_services_kb_bt_9: str
 
 
 with open('texts.yaml', 'r', encoding='utf-8') as file:

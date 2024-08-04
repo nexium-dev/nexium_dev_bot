@@ -21,8 +21,10 @@ from os import getenv
 load_dotenv()
 
 
-BOT_TOKEN = getenv('BOT_TOKEN')
 DATABASE_URL = getenv('DATABASE_URL')
 REDIS_URL = getenv('REDIS_URL')
+BOT_TOKEN = getenv('BOT_TOKEN')
+BOT_USERNAME = getenv('BOT_USERNAME')
+ADMIN_USERNAME = getenv('ADMIN_USERNAME')
 USER_ID = getenv('USER_ID')
 USER_HASH = getenv('USER_HASH')

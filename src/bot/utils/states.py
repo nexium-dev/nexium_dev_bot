@@ -27,3 +27,5 @@ storage = RedisStorage(redis=Redis.from_url(url=REDIS_URL))
 
 class States(StatesGroup):
     MAIN = State()
+    SERVICES = State()
+    CONSULTATION = State()

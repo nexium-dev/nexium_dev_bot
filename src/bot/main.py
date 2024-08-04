@@ -15,22 +15,18 @@
 #
 
 
-from sys import stdout
-from asyncio import run
 import logging
+from asyncio import run
+from sys import stdout
 
-from aiogram import Bot, Dispatcher
-from aiogram.client.default import DefaultBotProperties
-from aiogram.enums import ParseMode
+from aiogram import Dispatcher
 
 from database.database import init_db
 from routers import routers
-from utils.config import BOT_TOKEN
+from utils.bot import bot
 from utils.states import storage
 
-
 dp = Dispatcher(storage=storage)
-bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp.include_routers(*routers)
 
 

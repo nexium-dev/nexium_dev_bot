@@ -29,9 +29,7 @@ class Rkm(ReplyKeyboardMarkup):
 class Keyboards:
     MAIN = Rkm(
         keyboard=[
-            [Kb(text=texts.main_kb_bt_1)],
-            [Kb(text=texts.main_kb_bt_2), Kb(text=texts.main_kb_bt_3)],
-            [Kb(text=texts.main_kb_bt_4), Kb(text=texts.main_kb_bt_5)],
+            [Kb(text=texts.main_kb_bt_2), Kb(text=texts.main_kb_bt_4)],
             [Kb(text=texts.bt_consultation)],
         ],
     )
@@ -39,7 +37,17 @@ class Keyboards:
 class InlineKeyboards:
     MAIN = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text=texts.bt_consultation, url='https://nexium.me')],
+            [
+                InlineKeyboardButton(text=texts.main_kb_bt_2, callback_data='services'),
+                InlineKeyboardButton(text=texts.main_kb_bt_4, callback_data='contacts'),
+            ],
+            [InlineKeyboardButton(text=texts.bt_consultation, callback_data='consultation')],
+        ]
+    )
+    CONSULTATION = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text=texts.bt_consultation, callback_data='consultation')],
+            [InlineKeyboardButton(text=texts.bt_back, callback_data='contacts_back')],
         ]
     )
 
@@ -49,7 +57,7 @@ def create_kb_services(active_index=0):
             [
                 InlineKeyboardButton(
                     text=f'{texts.services_kb_selected} {text}' if index == active_index else text,
-                    callback_data='consultation' if text == texts.bt_consultation else f'services_{index}',
+                    callback_data='consultation' if text == texts.bt_consultation else f'services:{index}',
                 )
             ]
             for index, text in enumerate(
@@ -61,5 +69,70 @@ def create_kb_services(active_index=0):
                     texts.bt_consultation,
                 ],
             )
+        ] +
+        [
+            [
+                InlineKeyboardButton(
+                    text=texts.bt_back,
+                    callback_data='back',
+                ),
+            ],
+        ]
+    )
+
+
+def create_kb_name(tg_firstname: str):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text=tg_firstname,
+                    callback_data='consultation_name',
+                ),
+                InlineKeyboardButton(
+                    text=texts.bt_back,
+                    callback_data='back',
+                ),
+            ]
+        ]
+    )
+
+
+def create_kb_consultation_services(services: dict):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text=text,
+                    callback_data=f'consultation_category:{index}',
+                )
+            ] for index, text in services.items()
+        ] +
+        [
+            [
+                InlineKeyboardButton(
+                    text=texts.bt_back,
+                    callback_data='back',
+                ),
+            ],
+        ]
+    )
+
+
+def create_kb_consultation_chat(url: str):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text=texts.consultation_3_kb_bt_chat,
+                    url=url,
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    text=texts.bt_back,
+                    callback_data='back',
+                ),
+            ],
         ]
     )

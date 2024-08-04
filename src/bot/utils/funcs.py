@@ -23,3 +23,10 @@ def extract_number_from_command(command: str):
     if match:
         return int(match.group(1))
     return None
+
+
+def extract_number_from_text_by_prefix(prefix: str, text: str):
+    match = search(rf'{prefix}:(\d+)', text)
+    if match:
+        return int(match.group(1))
+    return None

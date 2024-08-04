@@ -15,15 +15,11 @@
 #
 
 
-from .main import router as router_main
-from .services import router as router_services
-from .consultation import router as router_consultation
-from .contacts import router as router_contacts
+from aiogram import Bot
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
+
+from utils.config import BOT_TOKEN
 
 
-routers = [
-    router_main,
-    router_services,
-    router_consultation,
-    router_contacts,
-]
+bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
