@@ -49,6 +49,8 @@ class Texts(BaseModel):
     consultation_3_added: str
     consultation_3_not_added: str
     consultation_3_kb_bt_chat: str
+    consultation_group: str
+    consultation_join: str
     consultation_services_kb_bt_1: str
     consultation_services_kb_bt_2: str
     consultation_services_kb_bt_3: str

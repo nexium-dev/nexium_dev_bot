@@ -26,7 +26,7 @@ class ConsultationModel(BaseModel):
     id = Column(Integer, primary_key=True, index=True)
 
     user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship(argument='UserModel', back_populates='consultations')
+    user = relationship(argument='UserModel', back_populates='consultations', lazy='selectin')
 
     name = Column(String(256), nullable=False)
     category = Column(String(256), nullable=False)

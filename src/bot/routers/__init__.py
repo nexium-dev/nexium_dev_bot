@@ -19,6 +19,7 @@ from .main import router as router_main
 from .services import router as router_services
 from .consultation import router as router_consultation
 from .contacts import router as router_contacts
+from .group import router as router_group
 
 
 routers = [
@@ -26,4 +27,5 @@ routers = [
     router_services,
     router_consultation,
     router_contacts,
+    router_group,
 ]
