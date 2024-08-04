@@ -187,6 +187,7 @@ async def consultation_category_kb_query(callback_query: CallbackQuery, state: F
             await client.add_chat_members(chat_id=group.id, user_ids=[username])
 
     await bot.set_chat_photo(chat_id=group.id, photo=BufferedInputFile(group_photo.read(), filename='group_photo.jpg'))
+    await bot.send_message(chat_id=group.id, text=texts.consultation_group)
     invite_link = await bot.create_chat_invite_link(chat_id=group.id)
     group_url = invite_link.invite_link
     reply_markup = create_kb_consultation_chat(url=group_url)

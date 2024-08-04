@@ -41,9 +41,7 @@ async def join(chat_member: ChatMemberUpdated, session: AsyncSession) -> None:
     if not consultation:
         return
 
-    if tg_user_id == consultation.user.tg_user_id:
-        await chat_member.answer(text=texts.consultation_group)
-    else:
+    if tg_user_id != consultation.user.tg_user_id:
         await chat_member.answer(
             text=texts.consultation_join.format(
                 name=chat_member.from_user.first_name,
