@@ -28,7 +28,7 @@ from keyboards import InlineKeyboards
 from utils import texts, States
 from utils.bot import bot
 from utils.funcs import extract_number_from_command
-
+from utils.notification import create_admin_notification
 
 router = Router(name=__name__)
 
@@ -75,6 +75,12 @@ async def start(message: Message, state: FSMContext, session: AsyncSession) -> N
                 'username': message.from_user.username,
                 'utm_id': utm.id if utm else None,
             },
+        )
+        await create_admin_notification(
+            text=texts.admin_notification_start.format(
+                username=message.from_user.username,
+                tg_user_id=tg_user_id,
+            ),
         )
 
     # await message.delete()

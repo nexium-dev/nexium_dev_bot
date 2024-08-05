@@ -161,3 +161,12 @@ consultation_services_kb_bt_6: "💻 Разработка корпоративн
 consultation_services_kb_bt_7: "🚀 Масштабирование существующих систем"
 consultation_services_kb_bt_8: "🔍 Создание аналитических платформ"
 consultation_services_kb_bt_9: "🔧 Прочие услуги"
+
+admin_notification_start: "💛 Новый пользователь в боте!\n
+
+@{username} (id {tg_user_id})"
+admin_notification_consultation: "✅ Новая консультация!\n
+
+@{username} (id {tg_user_id})\n
+Имя: {name}\n
+Категория: {category}."

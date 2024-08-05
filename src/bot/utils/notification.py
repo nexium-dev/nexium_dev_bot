@@ -15,17 +15,9 @@
 #
 
 
-from dotenv import load_dotenv
-from os import getenv
-
-load_dotenv()
+from utils.bot import bot
+from utils.config import ADMIN_TG_USER_ID
 
 
-DATABASE_URL = getenv('DATABASE_URL')
-REDIS_URL = getenv('REDIS_URL')
-BOT_TOKEN = getenv('BOT_TOKEN')
-BOT_USERNAME = getenv('BOT_USERNAME')
-ADMIN_USERNAME = getenv('ADMIN_USERNAME')
-ADMIN_TG_USER_ID = getenv('ADMIN_TG_USER_ID')
-USER_ID = getenv('USER_ID')
-USER_HASH = getenv('USER_HASH')
+async def create_admin_notification(text: str):
+    await bot.send_message(chat_id=ADMIN_TG_USER_ID, text=text)

@@ -16,7 +16,7 @@
 
 
 from aiogram import Router
-from aiogram.types import ChatMember, ChatMemberUpdated
+from aiogram.types import ChatMemberUpdated
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.database import db_session

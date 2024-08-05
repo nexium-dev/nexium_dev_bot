@@ -61,6 +61,9 @@ class Texts(BaseModel):
     consultation_services_kb_bt_8: str
     consultation_services_kb_bt_9: str
 
+    admin_notification_start: str
+    admin_notification_consultation: str
+
 
 with open('texts.yaml', 'r', encoding='utf-8') as file:
     data = safe_load(file)

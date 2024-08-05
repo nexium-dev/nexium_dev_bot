@@ -36,6 +36,7 @@ from utils import texts, States
 from utils.bot import bot
 from utils.config import BOT_USERNAME, USER_ID, USER_HASH, ADMIN_USERNAME
 from utils.funcs import extract_number_from_text_by_prefix
+from utils.notification import create_admin_notification
 from utils.photos import create_group_photo, create_invite_photo, create_client_photo
 
 
@@ -221,6 +222,14 @@ async def consultation_category_kb_query(callback_query: CallbackQuery, state: F
             'group_id': group.id,
             'group_url': group_url,
         }
+    )
+    await create_admin_notification(
+        text=texts.admin_notification_consultation.format(
+            username=callback_query.from_user.username,
+            tg_user_id=tg_user_id,
+            name=name,
+            category=category,
+        ),
     )
 
 
