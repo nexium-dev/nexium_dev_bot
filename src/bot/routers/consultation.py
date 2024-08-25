@@ -28,6 +28,7 @@ from pytz import timezone, UTC
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.database import db_session
+from database.models import UserModel
 from database.repositories.consultation import ConsultationRepository
 from database.repositories.user import UserRepository
 from keyboards import create_kb_name, create_kb_consultation_services, create_kb_consultation_chat
@@ -43,21 +44,21 @@ from utils.photos import create_group_photo, create_invite_photo, create_client_
 router = Router(name=__name__)
 
 
-services = {
-    1: texts.consultation_services_kb_bt_1,
-    2: texts.consultation_services_kb_bt_2,
-    3: texts.consultation_services_kb_bt_3,
-    4: texts.consultation_services_kb_bt_4,
-    5: texts.consultation_services_kb_bt_5,
-    6: texts.consultation_services_kb_bt_6,
-    7: texts.consultation_services_kb_bt_7,
-    8: texts.consultation_services_kb_bt_8,
-    9: texts.consultation_services_kb_bt_9,
-}
+def get_services(language: str):
+    return {
+        1: texts[language].consultation_services_kb_bt_1,
+        2: texts[language].consultation_services_kb_bt_2,
+        3: texts[language].consultation_services_kb_bt_3,
+        4: texts[language].consultation_services_kb_bt_4,
+        5: texts[language].consultation_services_kb_bt_5,
+        6: texts[language].consultation_services_kb_bt_6,
+        7: texts[language].consultation_services_kb_bt_7,
+        8: texts[language].consultation_services_kb_bt_8,
+        9: texts[language].consultation_services_kb_bt_9,
+    }
 
 
-
-async def set_name(tg_user_id: int, name: str, state: FSMContext):
+async def set_name(user: UserModel, name: str, state: FSMContext):
     name = name.title()
     data = await state.get_data()
     data['name'] = name
@@ -65,16 +66,22 @@ async def set_name(tg_user_id: int, name: str, state: FSMContext):
         data=data,
     )
 
-    await bot.delete_message(chat_id=tg_user_id, message_id=data.get('name_message_id'))
+    await bot.delete_message(chat_id=user.tg_user_id, message_id=data.get('name_message_id'))
     await bot.send_message(
-        chat_id=tg_user_id,
-        text=texts.consultation_2.format(name=name),
-        reply_markup=create_kb_consultation_services(services=services),
+        chat_id=user.tg_user_id,
+        text=texts[user.language].consultation_2.format(name=name),
+        reply_markup=create_kb_consultation_services(
+            language=user.language,
+            services=get_services(
+                language=user.language,
+            ),
+        ),
     )
 
 
 @router.callback_query(F.data == 'consultation')
-async def start(callback_query: CallbackQuery, state: FSMContext):
+@db_session
+async def start(callback_query: CallbackQuery, state: FSMContext, session: AsyncSession):
     await callback_query.answer()
     tg_user_id = callback_query.from_user.id
 
@@ -82,11 +89,17 @@ async def start(callback_query: CallbackQuery, state: FSMContext):
     for message_id in data['messages_to_delete']:
         await bot.delete_message(chat_id=tg_user_id, message_id=message_id)
 
+    user_repo = UserRepository(session=session)
+    user = await user_repo.get_by(obj_in={'tg_user_id': tg_user_id})
+
     await state.set_state(States.CONSULTATION)
     message = await bot.send_message(
         chat_id=tg_user_id,
-        text=texts.consultation_1,
-        reply_markup=create_kb_name(tg_firstname=callback_query.from_user.first_name),
+        text=texts[user.language].consultation_1,
+        reply_markup=create_kb_name(
+            language=user.language,
+            tg_firstname=callback_query.from_user.first_name,
+        ),
     )
     await state.set_data(
         data={
@@ -99,27 +112,35 @@ async def start(callback_query: CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(States.CONSULTATION, F.data == 'consultation_name')
-async def set_name_button(callback_query: CallbackQuery, state: FSMContext):
+@db_session
+async def set_name_button(callback_query: CallbackQuery, state: FSMContext, session: AsyncSession):
     await callback_query.answer()
     tg_user_id = callback_query.from_user.id
 
+    user_repo = UserRepository(session=session)
+    user = await user_repo.get_by(obj_in={'tg_user_id': tg_user_id})
+
     await set_name(
-        tg_user_id=tg_user_id,
+        user=user,
         name=callback_query.from_user.first_name,
         state=state,
     )
 
 
 @router.message(States.CONSULTATION)
-async def set_name_message(message: Message, state: FSMContext):
+@db_session
+async def set_name_message(message: Message, state: FSMContext, session: AsyncSession):
     await message.delete()
 
     data = await state.get_data()
     if data['name']:
         return
 
+    user_repo = UserRepository(session=session)
+    user = await user_repo.get_by(obj_in={'tg_user_id': message.from_user.id})
+
     await set_name(
-        tg_user_id=message.from_user.id,
+        user=user,
         name=message.text,
         state=state,
     )
@@ -133,10 +154,13 @@ async def consultation_category_kb_query(callback_query: CallbackQuery, state: F
     tg_user_id = callback_query.from_user.id
     username = callback_query.from_user.username
 
+    user_repo = UserRepository(session=session)
+    user = await user_repo.get_by(obj_in={'tg_user_id': tg_user_id})
+
     category_index = extract_number_from_text_by_prefix(prefix='consultation_category', text=callback_query.data)
     data = await state.get_data()
     name = data['name']
-    category = services[category_index]
+    category = get_services(language=user.language)[category_index]
 
 
     photos = await callback_query.from_user.get_profile_photos(limit=1)
@@ -148,8 +172,9 @@ async def consultation_category_kb_query(callback_query: CallbackQuery, state: F
         file_bytes = await bot.download_file(file.file_path)
         client_photo = BytesIO(file_bytes.read())
 
-    group_photo = await create_group_photo(client_photo=client_photo)
+    group_photo = await create_group_photo(language=user.language, client_photo=client_photo)
     invite_photo = await create_invite_photo(
+        language=user.language,
         group_photo=group_photo,
         title=category[2:][:30] + "..." if len(category[2:]) > 32 else category[2:],
         time=datetime.now(timezone('Europe/Moscow')).strftime('%H:%M'),
@@ -188,29 +213,26 @@ async def consultation_category_kb_query(callback_query: CallbackQuery, state: F
             await client.add_chat_members(chat_id=group.id, user_ids=[username])
 
     await bot.set_chat_photo(chat_id=group.id, photo=BufferedInputFile(group_photo.read(), filename='group_photo.jpg'))
-    await bot.send_message(chat_id=group.id, text=texts.consultation_group)
+    await bot.send_message(chat_id=group.id, text=texts[user.language].consultation_group)
     invite_link = await bot.create_chat_invite_link(chat_id=group.id)
     group_url = invite_link.invite_link
-    reply_markup = create_kb_consultation_chat(url=group_url)
+    reply_markup = create_kb_consultation_chat(url=group_url, language=user.language)
 
     chat_member = await bot.get_chat_member(chat_id=group.id, user_id=callback_query.from_user.id)
     if chat_member.status in [ChatMemberStatus.LEFT, ChatMemberStatus.RESTRICTED, ChatMemberStatus.KICKED]:
         await bot.send_photo(
             chat_id=tg_user_id,
             photo=BufferedInputFile(invite_photo.read(), filename='invite_photo.jpg'),
-            caption=texts.consultation_3_not_added,
+            caption=texts[user.language].consultation_3_not_added,
             reply_markup=reply_markup,
         )
     else:
         await bot.send_photo(
             chat_id=tg_user_id,
             photo=BufferedInputFile(invite_photo.read(), filename='invite_photo.jpg'),
-            caption=texts.consultation_3_added,
+            caption=texts[user.language].consultation_3_added,
             reply_markup=reply_markup,
         )
-
-    user_repo = UserRepository(session=session)
-    user = await user_repo.get_by(obj_in={'tg_user_id': tg_user_id})
 
     consultation_repo = ConsultationRepository(session=session)
     await consultation_repo.create(
@@ -224,7 +246,7 @@ async def consultation_category_kb_query(callback_query: CallbackQuery, state: F
         }
     )
     await create_admin_notification(
-        text=texts.admin_notification_consultation.format(
+        text=texts['ru'].admin_notification_consultation.format(
             username=callback_query.from_user.username,
             tg_user_id=tg_user_id,
             name=name,
@@ -235,6 +257,11 @@ async def consultation_category_kb_query(callback_query: CallbackQuery, state: F
 
 
 @router.callback_query(F.data == 'back')
-async def kb_back(callback_query: CallbackQuery, state: FSMContext):
+@db_session
+async def kb_back(callback_query: CallbackQuery, state: FSMContext, session: AsyncSession):
     await callback_query.message.delete()
-    await go_main(tg_user_id=callback_query.from_user.id, state=state)
+
+    user_repo = UserRepository(session=session)
+    user = await user_repo.get_by(obj_in={'tg_user_id': callback_query.from_user.id})
+
+    await go_main(user=user, state=state)

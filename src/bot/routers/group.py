@@ -21,6 +21,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.database import db_session
 from database.repositories.consultation import ConsultationRepository
+from database.repositories.user import UserRepository
 from utils import texts
 
 
@@ -41,9 +42,12 @@ async def join(chat_member: ChatMemberUpdated, session: AsyncSession) -> None:
     if not consultation:
         return
 
+    user_repo = UserRepository(session=session)
+    user = await user_repo.get_by(obj_in={'tg_user_id': tg_user_id})
+
     if tg_user_id != consultation.user.tg_user_id:
         await chat_member.answer(
-            text=texts.consultation_join.format(
+            text=texts[user.language].consultation_join.format(
                 name=chat_member.from_user.first_name,
                 tg_user_id=tg_user_id,
                 category=consultation.category,

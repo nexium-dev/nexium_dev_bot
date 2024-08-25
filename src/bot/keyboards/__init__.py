@@ -26,54 +26,58 @@ class Rkm(ReplyKeyboardMarkup):
 
 
 
-class Keyboards:
-    MAIN = Rkm(
+def create_main_kb(language: str):
+    return Rkm(
         keyboard=[
-            [Kb(text=texts.main_kb_bt_2), Kb(text=texts.main_kb_bt_4)],
-            [Kb(text=texts.bt_consultation)],
+            [Kb(text=texts[language].main_kb_bt_2), Kb(text=texts[language].main_kb_bt_4)],
+            [Kb(text=texts[language].bt_consultation)],
         ],
     )
 
-class InlineKeyboards:
-    MAIN = InlineKeyboardMarkup(
+
+def create_main_in_kb(language: str):
+    return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text=texts.main_kb_bt_2, callback_data='services'),
-                InlineKeyboardButton(text=texts.main_kb_bt_4, callback_data='contacts'),
+                InlineKeyboardButton(text=texts[language].main_kb_bt_2, callback_data='services'),
+                InlineKeyboardButton(text=texts[language].main_kb_bt_4, callback_data='contacts'),
             ],
-            [InlineKeyboardButton(text=texts.bt_consultation, callback_data='consultation')],
-        ]
-    )
-    CONSULTATION = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text=texts.bt_consultation, callback_data='consultation')],
-            [InlineKeyboardButton(text=texts.bt_back, callback_data='contacts_back')],
+            [InlineKeyboardButton(text=texts[language].bt_consultation, callback_data='consultation')],
         ]
     )
 
-def create_kb_services(active_index=0):
+def create_consultation_in_kb(language: str):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text=texts[language].bt_consultation, callback_data='consultation')],
+            [InlineKeyboardButton(text=texts[language].bt_back, callback_data='contacts_back')],
+        ]
+    )
+
+
+def create_kb_services(language: str, active_index=0):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text=f'{texts.services_kb_selected} {text}' if index == active_index else text,
-                    callback_data='consultation' if text == texts.bt_consultation else f'services:{index}',
+                    text=f'{texts[language].services_kb_selected} {text}' if index == active_index else text,
+                    callback_data='consultation' if text == texts[language].bt_consultation else f'services:{index}',
                 )
             ]
             for index, text in enumerate(
                 [
-                    texts.services_kb_bt_1,
-                    texts.services_kb_bt_2,
-                    texts.services_kb_bt_3,
-                    texts.services_kb_bt_4,
-                    texts.bt_consultation,
+                    texts[language].services_kb_bt_1,
+                    texts[language].services_kb_bt_2,
+                    texts[language].services_kb_bt_3,
+                    texts[language].services_kb_bt_4,
+                    texts[language].bt_consultation,
                 ],
             )
         ] +
         [
             [
                 InlineKeyboardButton(
-                    text=texts.bt_back,
+                    text=texts[language].bt_back,
                     callback_data='back',
                 ),
             ],
@@ -81,7 +85,7 @@ def create_kb_services(active_index=0):
     )
 
 
-def create_kb_name(tg_firstname: str):
+def create_kb_name(language: str, tg_firstname: str):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
@@ -89,16 +93,18 @@ def create_kb_name(tg_firstname: str):
                     text=tg_firstname,
                     callback_data='consultation_name',
                 ),
+            ],
+            [
                 InlineKeyboardButton(
-                    text=texts.bt_back,
+                    text=texts[language].bt_back,
                     callback_data='back',
                 ),
-            ]
+            ],
         ]
     )
 
 
-def create_kb_consultation_services(services: dict):
+def create_kb_consultation_services(language: str, services: dict):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
@@ -111,7 +117,7 @@ def create_kb_consultation_services(services: dict):
         [
             [
                 InlineKeyboardButton(
-                    text=texts.bt_back,
+                    text=texts[language].bt_back,
                     callback_data='back',
                 ),
             ],
@@ -119,18 +125,18 @@ def create_kb_consultation_services(services: dict):
     )
 
 
-def create_kb_consultation_chat(url: str):
+def create_kb_consultation_chat(language: str, url: str):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text=texts.consultation_3_kb_bt_chat,
+                    text=texts[language].consultation_3_kb_bt_chat,
                     url=url,
                 ),
             ],
             [
                 InlineKeyboardButton(
-                    text=texts.bt_back,
+                    text=texts[language].bt_back,
                     callback_data='back',
                 ),
             ],

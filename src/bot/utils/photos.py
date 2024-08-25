@@ -21,13 +21,13 @@ from random import choice
 from PIL import Image, ImageDraw, ImageOps, ImageFont
 
 
-async def create_group_photo(client_photo: BytesIO) -> BytesIO:
+async def create_group_photo(language: str, client_photo: BytesIO) -> BytesIO:
     base_image = Image.new(mode='RGB', size=(1080, 1080), color=(255, 255, 255))
 
     # Open client avatar and resize
     client_photo = Image.open(client_photo)
     client_photo_color = get_most_frequent_color(image=client_photo)
-    nexium_photo = Image.open('static/images/nexium.png')
+    nexium_photo = Image.open(f'static/images/{language}/nexium.png')
     client_photo = client_photo.resize((384, 384))
     nexium_photo = nexium_photo.resize((384, 384))
 
@@ -81,8 +81,8 @@ def get_most_frequent_color(image: Image, darken_factor: float = 0.8, lighten_fa
     return adjusted_color
 
 
-async def create_invite_photo(group_photo: BytesIO, title: str, time: str):
-    main_image = Image.open('static/images/consultation.png')
+async def create_invite_photo(language: str, group_photo: BytesIO, title: str, time: str):
+    main_image = Image.open(f'static/images/{language}/consultation.png')
     overlay_image = Image.open(group_photo)
     group_photo.seek(0)
     overlay_image = overlay_image.resize((95, 95))

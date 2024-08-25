@@ -25,6 +25,7 @@ class UserModel(BaseModel):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     tg_user_id = Column(BigInteger, unique=True)
+    language = Column(String(16))
     firstname = Column(String(256), nullable=False)
     lastname = Column(String(256))
     username = Column(String(256))

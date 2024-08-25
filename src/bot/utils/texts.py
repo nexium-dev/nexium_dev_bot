@@ -15,8 +15,12 @@
 #
 
 
-from yaml import safe_load
+from json import load
+
 from pydantic import BaseModel
+
+
+LANGUAGES = ['en', 'ru']
 
 
 class Texts(BaseModel):
@@ -64,9 +68,14 @@ class Texts(BaseModel):
     admin_notification_start: str
     admin_notification_consultation: str
 
+    def get(self, key, default=None):
+        return getattr(self, key, default)
 
-with open('texts.yaml', 'r', encoding='utf-8') as file:
-    data = safe_load(file)
+
+with open('texts.json', 'r', encoding='utf-8') as file:
+    data = load(file)
 
 
-texts = Texts(**data)
+texts = {}
+for language in LANGUAGES:
+    texts[language] = Texts(**data[language])
